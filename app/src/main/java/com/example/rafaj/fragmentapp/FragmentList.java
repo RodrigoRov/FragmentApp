@@ -5,7 +5,9 @@ import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,18 +42,24 @@ public class FragmentList extends ListFragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         //Toast.makeText(getActivity(), "Item: " + adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
+        String [] content = getResources().getStringArray(R.array.Parrafos);
+        TypedArray Imagenes = getResources().obtainTypedArray(R.array.ImagenesPlanetas);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             Intent newIntent = new Intent(getActivity().getApplicationContext(), Main2Activity.class);
             newIntent.setAction(Intent.ACTION_SEND);
-            newIntent.setType("text/plain");
-            newIntent.putExtra(Intent.EXTRA_TEXT, adapterView.getItemAtPosition(i).toString());
+
+            Contenido obj = new Contenido(Imagenes.getResourceId(i,-1),adapterView.getItemAtPosition(i).toString(),content[i]);
+            Log.d(obj.getPlanetName(),"nombre de planeta");
+            newIntent.putExtra("planetas",obj);
             startActivity(newIntent);
         }else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            Toast.makeText(getActivity(), "Item: " + adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
+
 
             Bundle bundle = new Bundle();
-            bundle.putString("KEY", adapterView.getItemAtPosition(i).toString());
+            Contenido obj = new Contenido(Imagenes.getResourceId(i,-1),adapterView.getItemAtPosition(i).toString(),content[i]);
+            bundle.putParcelable("planetas",obj);
+
             FragmentViewer frag = new FragmentViewer();
             frag.setArguments(bundle);
 
@@ -61,6 +69,7 @@ public class FragmentList extends ListFragment implements AdapterView.OnItemClic
             fragmentTransaction.replace(R.id.viewer, frag);
             fragmentTransaction.commit();
         }
+        Imagenes.recycle();
 
 
 
